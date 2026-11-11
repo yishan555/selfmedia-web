@@ -808,8 +808,18 @@ def scan_secrets(root):
 
 
 def archive_status(workspace):
-    manifest_path = workspace.path("_sync/manifest.json")
-    dates_path = workspace.path("_sync/dates.json")
+    try:
+        settings = workspace.settings()
+    except (OSError, ValueError):
+        settings = {}
+    configured = settings.get("archive_repo")
+    root = Path(configured) if type(configured) is str and configured.strip() else workspace.root
+    if root != workspace.root and root.is_dir() and not root.is_symlink():
+        manifest_path = root / "_sync/manifest.json"
+        dates_path = root / "_sync/dates.json"
+    else:
+        manifest_path = workspace.path("_sync/manifest.json")
+        dates_path = workspace.path("_sync/dates.json")
     if not manifest_path.is_file():
         return {"available": False, "publish_enabled": False, "message": "本工作区尚未生成归档快照。"}
     try:
