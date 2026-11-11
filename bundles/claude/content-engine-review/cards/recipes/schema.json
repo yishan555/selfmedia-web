@@ -1,0 +1,80 @@
+{
+  "version": 1,
+  "themes": ["cream-light", "navy-dark", "black", "olive", "wine", "gold", "paper", "purple"],
+  "common": {
+    "title": {"type":"text", "max":48, "required":true},
+    "brand": {"type":"text", "max":16},
+    "kicker": {"type":"text", "max":24},
+    "footer": {"type":"text", "max":32}
+  },
+  "templates": {
+    "cover": {"slots": {
+      "title":{"type":"text", "max":32, "required":true},
+      "subtitle":{"type":"text", "max":64},
+      "capsules":{"type":"list", "min":1, "max":4, "items":{"type":"text", "max":8}},
+      "note":{"type":"text", "max":48}
+    }, "assets":{"min":0, "max":0}},
+    "cover_alt": {"slots": {
+      "title":{"type":"text", "max":32, "required":true},
+      "subtitle":{"type":"text", "max":50},
+      "caption":{"type":"text", "max":64, "required":true},
+      "image_alt":{"type":"text", "max":80, "required":true}
+    }, "assets":{"min":1, "max":1}},
+    "frost": {"slots": {
+      "title":{"type":"text", "max":38, "required":true},
+      "frost_ratio":{"type":"number", "min":0.01, "max":1},
+      "image_alt":{"type":"text", "max":80, "required":true}
+    }, "assets":{"min":1, "max":1}},
+    "body": {"slots": {
+      "title":{"type":"text", "max":28, "required":true},
+      "lead":{"type":"text", "max":60},
+      "paragraphs":{"type":"list", "min":1, "max":3, "total_max":420, "required":true, "items":{"type":"text", "max":420}},
+      "quote":{"type":"text", "max":42},
+      "attribution":{"type":"text", "max":40}
+    }, "assets":{"min":0, "max":0}},
+    "quote": {"slots": {
+      "title":{"type":"text", "max":24, "required":true},
+      "quote":{"type":"text", "max":80, "required":true},
+      "attribution":{"type":"text", "max":40, "required":true},
+      "note":{"type":"text", "max":70}
+    }, "assets":{"min":0, "max":0}},
+    "list": {"slots": {
+      "items":{"type":"list", "min":2, "max":8, "required":true, "items":{"type":"object", "fields":{
+        "term":{"type":"text", "max":8, "required":true},
+        "note":{"type":"text", "max":8, "required":true}
+      }}},
+      "rule":{"type":"text", "max":50}
+    }, "assets":{"min":0, "max":0}},
+    "map": {"slots": {
+      "rows":{"type":"list", "min":1, "max":4, "required":true, "items":{"type":"object", "fields":{
+        "label":{"type":"text", "max":10, "required":true},
+        "org":{"type":"text", "max":16},
+        "name":{"type":"text", "max":12, "required":true},
+        "meta":{"type":"text", "max":24},
+        "color":{"type":"enum", "values":["olive","wine","purple","navy"], "required":true}
+      }}}
+    }, "assets":{"min":0, "max":0}},
+    "table": {"slots": {
+      "columns":{"type":"list", "min":2, "max":4, "required":true, "items":{"type":"text", "max":10}},
+      "rows":{"type":"list", "min":1, "max":6, "required":true, "items":{"type":"list", "min":2, "max":4, "items":{"type":"text", "max":16}}},
+      "verdict":{"type":"text", "max":45}
+    }, "assets":{"min":0, "max":0}},
+    "grid": {"slots": {
+      "caption":{"type":"text", "max":64, "required":true},
+      "image_alts":{"type":"list", "min":4, "max":9, "required":true, "items":{"type":"text", "max":80}}
+    }, "assets":{"min":4, "max":9, "counts":[4,6,9]}},
+    "shots": {"slots": {
+      "caption":{"type":"text", "max":64, "required":true},
+      "image_alts":{"type":"list", "min":3, "max":6, "required":true, "items":{"type":"text", "max":80}}
+    }, "assets":{"min":3, "max":6, "counts":[3,4,6]}},
+    "end": {"slots": {
+      "verdict":{"type":"text", "max":100, "required":true},
+      "credits":{"type":"list", "min":1, "max":4, "items":{"type":"text", "max":50}}
+    }, "assets":{"min":0, "max":0}}
+  },
+  "recipe_aliases": {
+    "cover":"cover", "cover_alt":"cover_alt", "body":"body", "case_profile":"body", "end":"end",
+    "quote_card":"quote", "comment_body":"body", "steps":"list", "shots":"shots",
+    "cover_grid":"grid", "compare_map":"map", "verdict":"table"
+  }
+}

@@ -1,0 +1,2 @@
+# Current workbench environment; installed Agent packages are not bundled here.
+-r apps/workbench/requirements.txt

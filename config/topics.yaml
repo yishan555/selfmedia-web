@@ -1,0 +1,50 @@
+# 当前内容方向与构建政策。调度时间、日量在各工作目录 settings.json 中配置。
+domains:
+  - name: ai
+    label: AI
+    keywords: [AI工具, 智能体, 多模态]
+  - name: robotics
+    label: Robotics
+    keywords: [机器人, 具身智能, 新交互]
+  - name: future_products
+    label: Future Products
+    keywords: [新产品, 智能硬件, 可穿戴]
+  - name: design_manufacturing
+    label: Design & Manufacturing
+    keywords: [产品设计, 制造, 工业设计]
+
+scoring:
+  version: "2.0"
+  dimensions:
+    - key: information_density
+      label: 信息密度
+      weight: 1.0
+      description: 单位篇幅内的有效信息量、独特见解、数据支撑
+    - key: hook_power
+      label: 标题吸引力
+      weight: 1.5
+      description: 好奇心缺口、具体性、情感触发、数字运用
+    - key: visual_appeal
+      label: 视觉表现力
+      weight: 1.0
+      description: 配图质量、排版美观、信息图价值
+    - key: audience_fit
+      label: 受众匹配度
+      weight: 1.0
+      description: 目标人群匹配、语言深度适配、实用价值
+    - key: emotional_resonance
+      label: 情感共鸣
+      weight: 1.5
+      description: 是否触动读者情绪、引发共情、产生个人连接感
+    - key: social_shareability
+      label: 社交传播力
+      weight: 1.5
+      description: 读者是否会主动转发/收藏/截图分享给朋友
+  threshold: 7.0
+  max_iterations: 3
+
+# 每个原生会话的墙钟预算，单位秒；research与write共用writer默认。
+runtime:
+  writer: 2400
+  review: 1200
+  assets: 2400

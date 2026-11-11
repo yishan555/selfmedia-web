@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="workbench-token" content="{{ token }}">
+  <title>内容工作台</title>
+  <link rel="stylesheet" href="/static/app.css">
+  <script src="/static/app.js" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#main">跳到内容</a>
+<header class="header">
+  <div class="brand"><span class="brand-mark" aria-hidden="true">W</span><div><h1>内容工作台</h1><p>把素材，变成值得发布的内容。</p></div></div>
+  <div class="header-actions"><label class="date-label" for="day-picker">工作日期</label><input type="date" id="day-picker" required><button id="refresh" class="button quiet">刷新</button><button id="generate-plan" class="button primary">生成当日排期</button></div>
+</header>
+<nav class="tabs" aria-label="工作区" role="tablist">
+  <button role="tab" id="tab-today" aria-controls="panel-today" aria-selected="true" data-tab="today">今日内容</button>
+  <button role="tab" id="tab-library" aria-controls="panel-library" aria-selected="false" tabindex="-1" data-tab="library">素材与选题</button>
+  <button role="tab" id="tab-plan" aria-controls="panel-plan" aria-selected="false" tabindex="-1" data-tab="plan">排期</button>
+  <button role="tab" id="tab-settings" aria-controls="panel-settings" aria-selected="false" tabindex="-1" data-tab="settings">设置</button>
+  <span class="local-note"><span aria-hidden="true">◇</span> 原生Agent自动化 · 发布关闭</span>
+</nav>
+<main id="main">
+  <section id="panel-today" class="panel" role="tabpanel" aria-labelledby="tab-today">
+    <div class="section-heading"><div><p class="eyebrow">DAILY EDITORIAL</p><h2 id="today-heading">今日内容</h2></div><p class="muted">选一篇内容，查看当前版本与验收结果。</p></div>
+    <div id="shortages" class="notice" hidden></div>
+    <div class="editor-grid">
+      <aside class="content-column" aria-label="当日内容列表"><div class="column-heading"><h3>制作清单</h3><span id="content-count" class="muted"></span></div><div id="content-list" aria-live="polite"><p class="empty">正在读取内容…</p></div></aside>
+      <section id="content-detail" class="detail-column" aria-label="内容详情"><div class="empty large"><span class="empty-symbol" aria-hidden="true">▤</span><h3>从左侧选一篇内容</h3><p>正文、配图与验收记录会显示在这里。</p></div></section>
+      <aside class="preview-column" aria-label="手机内容预览">
+        <div class="column-heading"><h3>阅读预览</h3><label for="phone-width" class="sr-only">手机预览宽度</label><select id="phone-width"><option value="360">360 px</option><option value="390" selected>390 px</option><option value="414">414 px</option></select></div>
+        <p class="preview-note">只读排版预览，非平台像素复刻。</p>
+        <div class="phone-stage"><div id="phone-frame" class="phone-frame"><div class="phone-top" aria-hidden="true"><span>9:41</span><span>● ━</span></div><div id="preview-empty" class="empty large"><h3>内容尚未生成</h3><p>完成制作后在这里检查阅读体验。</p></div><iframe id="mp-preview" title="公众号当前版本只读预览" sandbox="allow-same-origin" hidden></iframe><div id="xhs-preview" hidden><div class="image-stage"><img id="xhs-image" alt="当前内容配图" hidden><p id="image-empty" class="empty">暂无登记且可校验的配图</p><span id="image-counter" class="image-counter" hidden></span></div><div class="carousel-controls"><button id="image-prev" class="button quiet" aria-label="上一张配图">←</button><span class="muted">3:4 配图</span><button id="image-next" class="button quiet" aria-label="下一张配图">→</button></div><article class="xhs-copy"><h3 id="xhs-title"></h3><div id="xhs-body"></div></article></div></div></div>
+        <p id="preview-version" class="preview-note">预览只关联当前内容版本。</p>
+      </aside>
+    </div>
+  </section>
+  <section id="panel-library" class="panel" role="tabpanel" aria-labelledby="tab-library" hidden>
+    <div class="section-heading"><div><p class="eyebrow">SOURCE TO STORY</p><h2>素材与选题</h2></div><p class="muted">先存素材，再从证据就绪的选题开始制作。</p></div>
+    <div class="library-grid">
+      <section class="surface"><div class="column-heading"><h3 id="input-form-heading">添加素材</h3><button id="input-cancel" class="button quiet" hidden>取消编辑</button></div><p class="muted small">主题、链接、参考原文，至少填一项。</p>
+        <form id="input-form"><label>主题<input name="theme" maxlength="100000" placeholder="你希望深入讨论的问题"></label><label>来源链接<input name="url" type="url" maxlength="100000" placeholder="https://…"></label><label>参考原文<textarea name="reference" rows="6" maxlength="100000" placeholder="粘贴原文或已有素材"></textarea></label><label>补充说明<textarea name="notes" rows="3" maxlength="100000" placeholder="角度、受众或需要注意的事实"></textarea></label><button class="button primary" type="submit" id="input-submit">保存并排队调研</button></form>
+      </section>
+      <section class="surface"><div class="column-heading"><h3>素材收件箱</h3></div><p class="muted small">保存后自动排队。调研未完成不进入生产库存。</p><div id="inbox-list" aria-live="polite"></div></section>
+      <section class="surface"><div class="column-heading"><h3>选题库存</h3></div><label>搜索选题<input id="topic-search" type="search" placeholder="主题或备注"></label><p class="muted small">仅证据就绪的选题可生产；不拿空白素材凑数。</p><div id="topics-list" aria-live="polite"></div></section>
+    </div>
+  </section>
+  <section id="panel-plan" class="panel" role="tabpanel" aria-labelledby="tab-plan" hidden>
+    <div class="section-heading"><div><p class="eyebrow">MAKE ROOM FOR GOOD WORK</p><h2>当日排期</h2></div><p class="muted">未开始可调整；已开始请用修改意见创建新版本。</p></div>
+    <div class="surface table-wrap"><table><caption class="sr-only">当日内容排期与编辑操作</caption><thead><tr><th scope="col">选题</th><th scope="col">平台</th><th scope="col">生产时间</th><th scope="col">状态</th><th scope="col">操作</th></tr></thead><tbody id="plan-table"></tbody></table><p id="plan-empty" class="empty" hidden>当日尚无排期。添加素材或从库存手动生产。</p></div>
+  </section>
+  <section id="panel-settings" class="panel" role="tabpanel" aria-labelledby="tab-settings" hidden>
+    <div class="section-heading"><div><p class="eyebrow">YOUR EDITORIAL RHYTHM</p><h2>工作节奏</h2></div><p class="muted">时间取自工作区配置。网页不执行模型，也不发布。</p></div>
+    <div class="settings-grid"><form id="settings-form" class="surface"><h3>计划与生产</h3><label>时区<input name="timezone" value="Asia/Shanghai" required placeholder="Asia/Shanghai"></label><div class="form-row"><label>每日排期时间<input type="time" name="planning_time" required></label><label>新条目默认生产时间<input type="time" name="production_time" required></label></div><div class="form-row"><label>每日小红书篇数<input type="number" name="xhs_count" min="0" max="20" required></label><label>每日公众号篇数<input type="number" name="mp_count" min="0" max="20" required></label></div><label class="check-label"><input type="checkbox" name="auto_plan"><span>自动生成排期<small>由外部规划任务按此时间安排次日选题；仍需在宿主配置实际任务。</small></span></label><label class="check-label"><input type="checkbox" name="auto_produce"><span>自动生产<small>由Codex/Hermes/Claude原生定时会话领取；此页面不启动模型。</small></span></label><button class="button primary" type="submit">保存设置</button></form><aside class="settings-note"><span class="eyebrow">LOCAL & PRIVATE</span><h3>先检查内容，再决定交付</h3><p>验收只对当前版本有效。修改正文或图片后必须重新检查，不能沿用旧结论。</p><p>工作台没有发布开关，不提供运行器命令编辑，也不读取旧数据库。</p><p id="settings-state" class="notice">正在读取设置…</p><div id="archive-state" class="notice">正在读取归档状态…</div><button id="show-automations" class="button quiet">查看原生自动化任务模板</button><button id="show-runtime" class="button quiet">查看领取进度</button><div id="automation-templates" hidden></div><pre id="runtime-attempts" hidden></pre></aside></div>
+  </section>
+</main>
+<footer class="footer">素材有来源，事实有证据，成稿有验收。<span>本机内容编辑台</span></footer>
+<div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+</body>
+</html>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ title }}</title>
+</head>
+<body>
+<section style="padding:16px 20px;max-width:100%;box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue','PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;background:#fff;">
+
+<!-- Article Header -->
+<div style="margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid #f0f0f0;">
+{% if author %}
+<p style="font-size:13px;color:#888;margin:0 0 4px;">{{ author }}</p>
+{% endif %}
+</div>
+
+<!-- Article Body -->
+{{ content }}
+
+<!-- Article Footer -->
+<div style="margin-top:32px;padding-top:16px;border-top:1px solid #f0f0f0;">
+<p style="font-size:13px;color:#999;text-align:center;margin:8px 0;">— END —</p>
+</div>
+
+</section>
+</body>
+</html>

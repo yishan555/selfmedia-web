@@ -1,0 +1,38 @@
+/* ============================================================
+ * base.css — 页面骨架 / 字体栈 / 版心
+ * 画布：1080 x 1440（小红书 3:4 竖版）
+ * ============================================================ */
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  /* 系统已装 Noto Serif SC / Noto Sans SC 可变字体（VF），900 字重真实渲染 */
+  --serif: "Noto Serif SC", "Source Han Serif SC", SimSun, serif;
+  --sans:  "Noto Sans SC", "Source Han Sans SC", "Microsoft YaHei", sans-serif;
+  --mono:  "JetBrains Mono", "Cascadia Mono", Consolas, "Courier New", monospace;
+}
+
+html, body { width: 1080px; height: 1440px; overflow: hidden; }
+
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--ink);
+  display: flex;
+  flex-direction: column;
+  padding: 72px 84px;
+  position: relative;
+}
+
+/* 版心自动撑开，页脚沉底 */
+.page-body { flex: 1; display: flex; flex-direction: column; }
+
+/* 复古纸纹理（theme-paper 专用，叠加噪点感） */
+.theme-paper {
+  background-image:
+    radial-gradient(ellipse at 20% 10%, rgba(255,255,255,0.35), transparent 55%),
+    radial-gradient(ellipse at 85% 90%, rgba(120,100,60,0.12), transparent 50%);
+}
+
+/* 数字/英文衬线（用于中英混排标题中的西文） */
+.lat { font-family: var(--serif); }

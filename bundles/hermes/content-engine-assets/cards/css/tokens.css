@@ -1,0 +1,100 @@
+/* ============================================================
+ * tokens.css — 8 套主题色 token
+ * 来源：docs/images 27 张参考图取色（2026-10-12）
+ * 用法：<body class="theme-cream-light"> 切换主题
+ * 规则：--accent 默认橙红；遇品牌内容可覆写（KIMI→绿 / Claude→酒红）
+ * ============================================================ */
+
+/* 1. 奶油·浅（默认主主题） */
+.theme-cream-light {
+  --bg: #F2EDE3;
+  --ink: #22303E;          /* 墨蓝黑正文/标题 */
+  --ink-soft: #6B7280;     /* 次级文字 */
+  --accent: #C8502E;       /* 橙红强调 */
+  --card: #FBF8F1;         /* 白卡底 */
+  --line: #22303E;         /* 分隔线 */
+  --chip-bg: transparent;  /* 胶囊底 */
+}
+
+/* 2. 海军蓝·深（默认深主题） */
+.theme-navy-dark {
+  --bg: #1F3B66;
+  --ink: #F2EDE0;
+  --ink-soft: #A8B8CC;
+  --accent: #D96C47;
+  --card: rgba(242,237,224,0.08);
+  --line: #F2EDE0;
+  --chip-bg: transparent;
+}
+
+/* 3. 纯黑·深变体 */
+.theme-black {
+  --bg: #141414;
+  --ink: #EFE9DC;
+  --ink-soft: #8F8B80;
+  --accent: #D96C47;
+  --card: #1E1E1E;
+  --line: #EFE9DC;
+  --chip-bg: transparent;
+}
+
+/* 4. 橄榄绿 */
+.theme-olive {
+  --bg: #9AA84F;
+  --ink: #F5F2E4;
+  --ink-soft: #E3E4C9;
+  --accent: #F5F2E4;
+  --card: transparent;
+  --line: #F5F2E4;
+  --chip-bg: transparent;
+}
+
+/* 5. 酒红 */
+.theme-wine {
+  --bg: #6E2233;
+  --ink: #F2E8DC;
+  --ink-soft: #C9A0A8;
+  --accent: #E8A87C;
+  --card: transparent;
+  --line: #F2E8DC;
+  --chip-bg: transparent;
+}
+
+/* 6. 金黄 */
+.theme-gold {
+  --bg: #D9A62E;
+  --ink: #2A2419;
+  --ink-soft: #6B5A32;
+  --accent: #B03A26;
+  --card: transparent;
+  --line: #2A2419;
+  --chip-bg: transparent;
+}
+
+/* 7. 复古纸 */
+.theme-paper {
+  --bg: #E6DCC3;
+  --ink: #262626;
+  --ink-soft: #6E6552;
+  --accent: #B03A26;
+  --card: #EFE7D2;
+  --line: #262626;
+  --chip-bg: transparent;
+}
+
+/* 8. 紫 */
+.theme-purple {
+  --bg: #6B5876;
+  --ink: #F0E9E4;
+  --ink-soft: #C4B6C9;
+  --accent: #E8A87C;
+  --card: transparent;
+  --line: #F0E9E4;
+  --chip-bg: transparent;
+}
+
+/* 品牌强调色覆写示例（强调色跟随内容品牌） */
+.accent-olive  { --accent: #7C8A4D; }
+.accent-wine   { --accent: #A63346; }
+.accent-blue   { --accent: #2E6BB0; }
+.accent-orange { --accent: #E0703A; }

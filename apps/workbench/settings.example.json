@@ -1,0 +1,11 @@
+{
+  "timezone": "Asia/Shanghai",
+  "planning_time": "16:50",
+  "production_time": "07:00",
+  "daily_counts": {"xhs": 1, "mp": 1},
+  "auto_plan": false,
+  "auto_produce": false,
+  "execution_mode": "external",
+  "host": "codex",
+  "publish_enabled": false
+}

@@ -1,0 +1,10 @@
+.local/
+tmp/
+.venv/
+venv/
+node_modules/
+__pycache__/
+*.py[cod]
+.content-engine-install.lock
+Thumbs.db
+.DS_Store
