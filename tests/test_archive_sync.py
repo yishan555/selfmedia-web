@@ -172,10 +172,10 @@ class ArchiveTests(unittest.TestCase):
         self.assertEqual(conflicts, ["a" * 32])
 
     def test_secret_scan_detects_bearer_and_ignores_images(self):
-        (self.repo / "notes.txt").write_text("Authorization: Bearer " + "x" * 32, encoding="utf-8")
+        (self.repo / "notes.txt").write_text("Authorization: " + "Bearer " + "x" * 32, encoding="utf-8")
         self.assertIn("notes.txt", scan_secrets(self.repo))
         (self.repo / "notes.txt").unlink()
-        (self.repo / "image.png").write_bytes(b"-----BEGIN PRIVATE KEY-----")
+        (self.repo / "image.png").write_bytes(b"-----BEGIN " + b"PRIVATE KEY-----")
         self.assertEqual(scan_secrets(self.repo), [])
 
     def test_status_reports_ahead_and_in_sync(self):

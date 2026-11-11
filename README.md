@@ -6,7 +6,7 @@
 pwsh -File open-workbench.ps1 -Port 5051
 ```
 
-浏览器访问 http://127.0.0.1:5051。服务只绑定回环地址；发布始终关闭。
+浏览器访问 http://127.0.0.1:5051。服务只绑定回环地址；发布始终关闭。只有生产机写入归档；远端克隆用于查看、跟踪进度和提出修订，代码镜像不要手改。
 
 - `YYYY-MM-DD/`：按日计划、正文、配图、审校、回执和 revision。
 - `library/`：素材收件箱与证据就绪选题。
@@ -19,7 +19,7 @@ pwsh -File open-workbench.ps1 -Port 5051
 生产机每天写作前和最后一次审校后运行：
 
 ```powershell
-py -3.12 -B -m apps.workbench --workspace "<本仓库绝对路径>" archive --repo "<本仓库绝对路径>" --mode sync
+py -3.12 -B -m apps.workbench --workspace "<hermes-selfmedia/workspace>" archive --repo "<selfmedia-web>" --mode sync
 ```
 
 同步先拉取远端并做三方比对；远端有新内容则导入，本地有新内容则上传。冲突时停止，不覆盖，不 force push。

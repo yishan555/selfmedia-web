@@ -488,6 +488,9 @@ class ArchiveSync:
             self._write_manifest(left, pipeline, remote, local_before, build_bundles)
             self._write_log(imported, exported, merges, left, right, remote, local_before)
             self._write_baseline()
+            findings = scan_secrets(self.repo)
+            if findings:
+                return {"ok": False, "state": "blocked", "reason_code": "secret_scan_failed", "findings": findings[:20], "publish_enabled": False}
             commit = self._commit(message)
             if commit is None:
                 return {"ok": True, "state": "no_changes", "imported": imported, "exported": exported, "merged": merges, "publish_enabled": False}
@@ -561,8 +564,8 @@ class ArchiveSync:
         return {
             ".gitignore": "\n".join([".local/", "tmp/", ".venv/", "venv/", "node_modules/", "__pycache__/", "*.py[cod]", ".content-engine-install.lock", "Thumbs.db", ".DS_Store", ""]),
             ".gitattributes": "* -text\n",
-            "README.md": "# selfmedia-web\n\n这是 hermes-selfmedia 的跨机内容归档与工作台镜像。\n\n```powershell\npwsh -File open-workbench.ps1 -Port 5051\n```\n\n浏览器访问 http://127.0.0.1:5051。服务只绑定回环地址；发布始终关闭。\n\n- `YYYY-MM-DD/`：按日计划、正文、配图、审校、回执和 revision。\n- `library/`：素材收件箱与证据就绪选题。\n- `apps/workbench/`、`skills/content-engine/`、`tools/skill-packager/`：源码镜像，由生产机生成，不在此直接修改。\n- `bundles/codex|claude|hermes/`：预构建的五角色技能包。\n- `_pipeline/`：脱敏后的任务/claim/事件/回执摘要，不含 token、owner 会话或原始工作包。\n- `_logs/`：归档同步日志。\n- `_sync/`：同步基线、日期索引和最近一次同步摘要。\n\n生产机每天写作前和最后一次审校后运行：\n\n```powershell\npy -3.12 -B -m apps.workbench --workspace \"<本仓库绝对路径>\" archive --repo \"<本仓库绝对路径>\" --mode sync\n```\n\n同步先拉取远端并做三方比对；远端有新内容则导入，本地有新内容则上传。冲突时停止，不覆盖，不 force push。\n",
-            "open-workbench.ps1": "param([int]$Port = 5051)\n$ErrorActionPreference = \"Stop\"\n$root = Split-Path -Parent $MyInvocation.MyCommand.Path\nSet-Location -LiteralPath $root\n$skills = Join-Path $root \"bundles/codex\"\nif (Get-Command py -ErrorAction SilentlyContinue) {\n    & py -3.12 -B -m apps.workbench --workspace $root --host codex --skills $skills serve --port $Port\n} else {\n    & python -B -m apps.workbench --workspace $root --host codex --skills $skills serve --port $Port\n}\n",
+            "README.md": "# selfmedia-web\n\n这是 hermes-selfmedia 的跨机内容归档与工作台镜像。\n\n```powershell\npwsh -File open-workbench.ps1 -Port 5051\n```\n\n浏览器访问 http://127.0.0.1:5051。服务只绑定回环地址；发布始终关闭。只有生产机写入归档；远端克隆用于查看、跟踪进度和提出修订，代码镜像不要手改。\n\n- `YYYY-MM-DD/`：按日计划、正文、配图、审校、回执和 revision。\n- `library/`：素材收件箱与证据就绪选题。\n- `apps/workbench/`、`skills/content-engine/`、`tools/skill-packager/`：源码镜像，由生产机生成，不在此直接修改。\n- `bundles/codex|claude|hermes/`：预构建的五角色技能包。\n- `_pipeline/`：脱敏后的任务/claim/事件/回执摘要，不含 token、owner 会话或原始工作包。\n- `_logs/`：归档同步日志。\n- `_sync/`：同步基线、日期索引和最近一次同步摘要。\n\n生产机每天写作前和最后一次审校后运行：\n\n```powershell\npy -3.12 -B -m apps.workbench --workspace \"<hermes-selfmedia/workspace>\" archive --repo \"<selfmedia-web>\" --mode sync\n```\n\n同步先拉取远端并做三方比对；远端有新内容则导入，本地有新内容则上传。冲突时停止，不覆盖，不 force push。\n",
+            "open-workbench.ps1": "param([int]$Port = 5051)\n$ErrorActionPreference = \"Stop\"\n$root = Split-Path -Parent $MyInvocation.MyCommand.Path\nSet-Location -LiteralPath $root\n$skills = Join-Path $root \"bundles/codex\"\nif (Get-Command py -ErrorAction SilentlyContinue) {\n    & py -3.12 -B -m apps.workbench --workspace $root --host codex --skills $skills serve --port $Port\n} elseif (Get-Command python -ErrorAction SilentlyContinue) {\n    & python -B -m apps.workbench --workspace $root --host codex --skills $skills serve --port $Port\n} else {\n    throw \"Python 3.11+ is required. Install Python or add it to PATH.\"\n}\n",
             "open-workbench.sh": "#!/usr/bin/env bash\nset -euo pipefail\nroot=\"$(cd \"$(dirname \"${BASH_SOURCE[0]}\")\" && pwd)\"\ncd \"$root\"\nexec python3 -B -m apps.workbench --workspace \"$root\" --host codex --skills \"$root/bundles/codex\" serve --port \"${1:-5051}\"\n",
         }
     def _project_commit(self):
@@ -823,7 +826,4 @@ def run_archive(workspace, *, repo, mode="sync", remote=DEFAULT_REMOTE, branch="
         raise ArchiveError("archive requires sync mode", "invalid_mode")
     if not pull:
         return {"ok": False, "state": "blocked", "reason_code": "pull_required", "publish_enabled": False}
-    findings = scan_secrets(sync.repo if sync.repo.exists() else sync.workspace.root)
-    if findings:
-        return {"ok": False, "state": "blocked", "reason_code": "secret_scan_failed", "findings": findings[:20], "publish_enabled": False}
     return sync.sync(push=push, build_bundles=build_bundles, allow_active=allow_active, message=message)
