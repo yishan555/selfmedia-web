@@ -97,6 +97,13 @@ def json_object(raw):
         raise ArchiveError("archive JSON must be an object", "invalid_json")
     return value
 
+def portable_settings_bytes(settings):
+    value = dict(settings)
+    value.pop("archive_repo", None)
+    value.pop("archive_remote", None)
+    return (canonical(value) + "\n").encode("utf-8")
+
+
 class ArchiveSync:
     def __init__(self, workspace, repo, remote=DEFAULT_REMOTE, branch="main", project=None, allow_local_remote=False):
         self.workspace = workspace
@@ -221,7 +228,8 @@ class ArchiveSync:
         result = {}
         settings = root / "config/settings.json"
         if settings.is_file():
-            result["config/settings.json"] = file_hash(settings)
+            data = portable_settings_bytes(load_json(settings))
+            result["config/settings.json"] = hashlib.sha256(data).hexdigest()
         library = root / "library"
         if library.is_dir():
             for path in self._iter_files(library):
@@ -472,9 +480,9 @@ class ArchiveSync:
                         for path, digest in sorted(left.items()):
                             source = self.workspace.path(path)
                             target = safe_path(self.repo, path)
-                            if target.exists() and file_hash(target) == digest:
+                            data = portable_settings_bytes(load_json(source)) if path == "config/settings.json" else source.read_bytes()
+                            if target.exists() and target.read_bytes() == data:
                                 continue
-                            data = source.read_bytes()
                             if hashlib.sha256(data).hexdigest() != digest:
                                 raise ArchiveError("workspace changed while syncing", "input_changed")
                             atomic_bytes(target, data)

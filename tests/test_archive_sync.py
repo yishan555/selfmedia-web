@@ -1,6 +1,7 @@
 """Offline archive/sync tests. Simulated remote state only; no network mutation."""
 
 import hashlib
+import json
 import os
 import shutil
 import subprocess
@@ -13,7 +14,7 @@ RUN_DIR = bootstrap(__file__)
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from apps.workbench.archive import ArchiveSync, canonical, canonical_remote, is_allowed_commit_path, is_managed, scan_secrets
+from apps.workbench.archive import ArchiveSync, canonical, canonical_remote, is_allowed_commit_path, is_managed, portable_settings_bytes, scan_secrets
 from apps.workbench.workspace import Workspace, atomic_json, load_json
 
 SETTINGS = {"timezone": "Asia/Shanghai", "planning_time": "16:50", "production_time": "07:00", "daily_counts": {"xhs": 1, "mp": 0}, "auto_plan": False, "auto_produce": False, "execution_mode": "external", "host": "codex", "publish_enabled": False}
@@ -150,6 +151,16 @@ class ArchiveTests(unittest.TestCase):
         self.assertFalse(result["ok"])
         self.assertEqual(result["reason_code"], "sync_conflict")
         self.assertEqual(load_json(self.ws.path(path)), {"title": "标题", "body": "正文"})
+
+    def test_archived_settings_omit_sync_paths(self):
+        settings = self.ws.settings()
+        self.ws.save_settings({**settings, "archive_repo": "D:/private/machine/selfmedia-web", "archive_remote": "https://github.com/yishan555/selfmedia-web.git"}, settings["revision"])
+        archived = load_json(self.ws.path("config/settings.json"))
+        portable = json.loads(portable_settings_bytes(archived))
+        self.assertNotIn("archive_repo", portable)
+        self.assertNotIn("archive_remote", portable)
+        self.assertIn("timezone", portable)
+        self.assertEqual(self.ws.settings()["archive_repo"], "D:/private/machine/selfmedia-web")
 
     def test_active_claim_blocks_sync(self):
         atomic_json(self.ws.path(".local/claims/content-" + "a" * 32 + ".json"), {"attempt": "b" * 32})
