@@ -273,7 +273,7 @@ def create_app(workspace, jobs=None):
     @app.get("/api/archive")
     def archive_view():
         settings = workspace.settings()
-        return success(archive=archive_status(workspace), config={"repo": settings.get("archive_repo", ""), "remote": settings.get("archive_remote", "")}, publish_enabled=False)
+        return success(archive=archive_status(workspace), config={"repo": settings.get("archive_repo", ""), "remote": settings.get("archive_remote", ""), "read_only_replica": True}, publish_enabled=False)
 
     @app.get("/api/runtime")
     def runtime_status():
