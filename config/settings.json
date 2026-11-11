@@ -1,1 +1,1 @@
-{"auto_plan":false,"auto_produce":false,"daily_counts":{"mp":0,"xhs":1},"execution_mode":"external","host":"codex","planning_time":"16:50","production_time":"07:00","publish_enabled":false,"revision":4,"schema_version":1,"timezone":"Asia/Shanghai"}
+{"auto_plan":true,"auto_produce":true,"daily_counts":{"mp":0,"xhs":1},"execution_mode":"external","host":"codex","planning_time":"16:50","production_time":"07:00","publish_enabled":false,"revision":5,"schema_version":1,"timezone":"Asia/Shanghai"}
