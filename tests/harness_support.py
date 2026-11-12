@@ -68,7 +68,8 @@ def snapshot(paths):
 
 
 def new_run_directory(label="run", root=ROOT):
-    parent = Path(root) / "tmp" / "regression"
+    base = Path(root).resolve()
+    parent = base / "tmp" / "regression" if base == ROOT.resolve() else base
     parent.mkdir(parents=True, exist_ok=True)
     for _ in range(100):
         candidate = parent / (label + "-" + uuid.uuid4().hex[:8])

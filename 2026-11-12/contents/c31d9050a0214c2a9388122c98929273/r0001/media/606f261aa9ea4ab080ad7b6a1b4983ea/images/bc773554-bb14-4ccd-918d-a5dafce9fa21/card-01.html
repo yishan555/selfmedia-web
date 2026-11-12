@@ -1,0 +1,393 @@
+<!DOCTYPE html><html lang="zh"><head><meta charset="utf-8"><style>/* ============================================================
+ * tokens.css — 8 套主题色 token
+ * 来源：docs/images 27 张参考图取色（2026-10-12）
+ * 用法：<body class="theme-cream-light"> 切换主题
+ * 规则：--accent 默认橙红；遇品牌内容可覆写（KIMI→绿 / Claude→酒红）
+ * ============================================================ */
+
+/* 1. 奶油·浅（默认主主题） */
+.theme-cream-light {
+  --bg: #F2EDE3;
+  --ink: #22303E;          /* 墨蓝黑正文/标题 */
+  --ink-soft: #6B7280;     /* 次级文字 */
+  --accent: #C8502E;       /* 橙红强调 */
+  --card: #FBF8F1;         /* 白卡底 */
+  --line: #22303E;         /* 分隔线 */
+  --chip-bg: transparent;  /* 胶囊底 */
+}
+
+/* 2. 海军蓝·深（默认深主题） */
+.theme-navy-dark {
+  --bg: #1F3B66;
+  --ink: #F2EDE0;
+  --ink-soft: #A8B8CC;
+  --accent: #D96C47;
+  --card: rgba(242,237,224,0.08);
+  --line: #F2EDE0;
+  --chip-bg: transparent;
+}
+
+/* 3. 纯黑·深变体 */
+.theme-black {
+  --bg: #141414;
+  --ink: #EFE9DC;
+  --ink-soft: #8F8B80;
+  --accent: #D96C47;
+  --card: #1E1E1E;
+  --line: #EFE9DC;
+  --chip-bg: transparent;
+}
+
+/* 4. 橄榄绿 */
+.theme-olive {
+  --bg: #9AA84F;
+  --ink: #F5F2E4;
+  --ink-soft: #E3E4C9;
+  --accent: #F5F2E4;
+  --card: transparent;
+  --line: #F5F2E4;
+  --chip-bg: transparent;
+}
+
+/* 5. 酒红 */
+.theme-wine {
+  --bg: #6E2233;
+  --ink: #F2E8DC;
+  --ink-soft: #C9A0A8;
+  --accent: #E8A87C;
+  --card: transparent;
+  --line: #F2E8DC;
+  --chip-bg: transparent;
+}
+
+/* 6. 金黄 */
+.theme-gold {
+  --bg: #D9A62E;
+  --ink: #2A2419;
+  --ink-soft: #6B5A32;
+  --accent: #B03A26;
+  --card: transparent;
+  --line: #2A2419;
+  --chip-bg: transparent;
+}
+
+/* 7. 复古纸 */
+.theme-paper {
+  --bg: #E6DCC3;
+  --ink: #262626;
+  --ink-soft: #6E6552;
+  --accent: #B03A26;
+  --card: #EFE7D2;
+  --line: #262626;
+  --chip-bg: transparent;
+}
+
+/* 8. 紫 */
+.theme-purple {
+  --bg: #6B5876;
+  --ink: #F0E9E4;
+  --ink-soft: #C4B6C9;
+  --accent: #E8A87C;
+  --card: transparent;
+  --line: #F0E9E4;
+  --chip-bg: transparent;
+}
+
+/* 品牌强调色覆写示例（强调色跟随内容品牌） */
+.accent-olive  { --accent: #7C8A4D; }
+.accent-wine   { --accent: #A63346; }
+.accent-blue   { --accent: #2E6BB0; }
+.accent-orange { --accent: #E0703A; }
+</style><style>/* ============================================================
+ * base.css — 页面骨架 / 字体栈 / 版心
+ * 画布：1080 x 1440（小红书 3:4 竖版）
+ * ============================================================ */
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  /* 系统已装 Noto Serif SC / Noto Sans SC 可变字体（VF），900 字重真实渲染 */
+  --serif: "Noto Serif SC", "Source Han Serif SC", SimSun, serif;
+  --sans:  "Noto Sans SC", "Source Han Sans SC", "Microsoft YaHei", sans-serif;
+  --mono:  "JetBrains Mono", "Cascadia Mono", Consolas, "Courier New", monospace;
+}
+
+html, body { width: 1080px; height: 1440px; overflow: hidden; }
+
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--ink);
+  display: flex;
+  flex-direction: column;
+  padding: 72px 84px;
+  position: relative;
+}
+
+/* 版心自动撑开，页脚沉底 */
+.page-body { flex: 1; display: flex; flex-direction: column; }
+
+/* 复古纸纹理（theme-paper 专用，叠加噪点感） */
+.theme-paper {
+  background-image:
+    radial-gradient(ellipse at 20% 10%, rgba(255,255,255,0.35), transparent 55%),
+    radial-gradient(ellipse at 85% 90%, rgba(120,100,60,0.12), transparent 50%);
+}
+
+/* 数字/英文衬线（用于中英混排标题中的西文） */
+.lat { font-family: var(--serif); }
+</style><style>/* ============================================================
+ * components.css — 标准化组件库（~28 个，5 类）
+ * 命名：.c-<组件>；变体用 .c-<组件>--<变体>
+ * 度量基准：1080x1440 画布，对照 docs/images 参考图（1160 宽）×0.93 换算
+ * 修订 2026-10-12：对照参考图收紧字距/字号/密度，标题字重 900
+ * ============================================================ */
+
+/* ---------- A. 框架层 ---------- */
+
+/* A0 账号 logo 署名
+   实现：SVG mask + background:currentColor —— 颜色自动跟随主题 --ink，
+   深主题变浅、浅主题变深，零配置；特殊底色上用 color 覆写。
+   原始 assets/logo.png（186x79 浅灰透明底）仅作存档，生产一律用本 class */
+.c-logo {
+  display: inline-block; width: 96px; height: 41px; flex-shrink: 0;
+  color: var(--ink); background: currentColor;
+  -webkit-mask: url("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiB2aXNpb25jb3J0ZXggVlRyYWNlciAwLjYuMTIgLS0+DQo8c3ZnIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB3aWR0aD0iMTg2IiBoZWlnaHQ9Ijc5Ij4NCjxwYXRoIGQ9Ik0wLDAgTDY5LDAgTDY5LDMgTDY0LDggTDU2LDE2IEw0OSwyNCBMNDMsMzIgTDM4LDM2IEwzOCw3OCBMMzAsNzkgTC0xLDc5IEwwLDc1IEwxMCw2NSBMMTUsNTkgTDIyLDUzIEwyOSw0NSBMMzMsNDAgTDMwLDM1IEwxOSwyMyBMMTQsMTggTDMsNiBMMCwyIFogIiBmaWxsPSJjdXJyZW50Q29sb3IiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDYzLDApIi8+DQo8cGF0aCBkPSJNMCwwIEwyNywwIEwzMiwyIEwzMiw0IEwzMCw0IEwyOCw4IEwxNSwyNCBMNCwzOCBMLTYsNTEgTC0xMSw1MCBMLTE3LDQ1IEwtMjIsMzUgTC0yMiwyMSBMLTE3LDExIEwtOCwzIFogIiBmaWxsPSJjdXJyZW50Q29sb3IiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDE1MywwKSIvPg0KPHBhdGggZD0iTTAsMCBMMTEsMSBMMjEsNiBMMjksMTQgTDM0LDIzIEwzNiwzMSBMMzYsMzYgTDIsMzYgTDIsNzYgTC03LDc1IEwtMTUsNzEgTC0yNCw2MiBMLTI5LDUyIEwtMzEsNDUgTC0zMSwzMSBMLTI3LDIwIEwtMjEsMTEgTC0xMyw0IEwtNiwxIFogIiBmaWxsPSJjdXJyZW50Q29sb3IiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDMyLDEpIi8+DQo8cGF0aCBkPSJNMCwwIEw1LDIgTDEzLDExIEwxNiwyMCBMMTYsMjggTDEyLDM4IEw2LDQ1IEwtNiw1MSBMLTM2LDUxIEwtMzksNTAgTC0zNyw0NiBMLTI1LDMwIEwtMTMsMTYgTC01LDYgWiAiIGZpbGw9ImN1cnJlbnRDb2xvciIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTcwLDI3KSIvPg0KPC9zdmc+DQo=") no-repeat center / contain;
+  mask: url("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiB2aXNpb25jb3J0ZXggVlRyYWNlciAwLjYuMTIgLS0+DQo8c3ZnIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB3aWR0aD0iMTg2IiBoZWlnaHQ9Ijc5Ij4NCjxwYXRoIGQ9Ik0wLDAgTDY5LDAgTDY5LDMgTDY0LDggTDU2LDE2IEw0OSwyNCBMNDMsMzIgTDM4LDM2IEwzOCw3OCBMMzAsNzkgTC0xLDc5IEwwLDc1IEwxMCw2NSBMMTUsNTkgTDIyLDUzIEwyOSw0NSBMMzMsNDAgTDMwLDM1IEwxOSwyMyBMMTQsMTggTDMsNiBMMCwyIFogIiBmaWxsPSJjdXJyZW50Q29sb3IiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDYzLDApIi8+DQo8cGF0aCBkPSJNMCwwIEwyNywwIEwzMiwyIEwzMiw0IEwzMCw0IEwyOCw4IEwxNSwyNCBMNCwzOCBMLTYsNTEgTC0xMSw1MCBMLTE3LDQ1IEwtMjIsMzUgTC0yMiwyMSBMLTE3LDExIEwtOCwzIFogIiBmaWxsPSJjdXJyZW50Q29sb3IiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDE1MywwKSIvPg0KPHBhdGggZD0iTTAsMCBMMTEsMSBMMjEsNiBMMjksMTQgTDM0LDIzIEwzNiwzMSBMMzYsMzYgTDIsMzYgTDIsNzYgTC03LDc1IEwtMTUsNzEgTC0yNCw2MiBMLTI5LDUyIEwtMzEsNDUgTC0zMSwzMSBMLTI3LDIwIEwtMjEsMTEgTC0xMyw0IEwtNiwxIFogIiBmaWxsPSJjdXJyZW50Q29sb3IiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDMyLDEpIi8+DQo8cGF0aCBkPSJNMCwwIEw1LDIgTDEzLDExIEwxNiwyMCBMMTYsMjggTDEyLDM4IEw2LDQ1IEwtNiw1MSBMLTM2LDUxIEwtMzksNTAgTC0zNyw0NiBMLTI1LDMwIEwtMTMsMTYgTC01LDYgWiAiIGZpbGw9ImN1cnJlbnRDb2xvciIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTcwLDI3KSIvPg0KPC9zdmc+DQo=") no-repeat center / contain;
+}
+.c-logo--lg { width: 148px; height: 63px; }   /* 封面/收尾页主署名 */
+.c-logo--sm { width: 74px; height: 31px; }    /* 页脚/磨砂署名行 */
+.c-logo--soft { color: var(--ink-soft); }      /* 弱化（页脚默认推荐） */
+.c-frost .c-logo, .c-colorcard .c-logo,
+.c-map-block .c-logo { color: #fff; }          /* 深色/彩色块上强制白 */
+
+/* A1 页眉条：左品牌小字 + 右计数 */
+.c-topbar {
+  display: flex; justify-content: space-between; align-items: baseline;
+  font-family: var(--mono); font-size: 24px; letter-spacing: 4px;
+  color: var(--ink-soft); padding-bottom: 26px;
+}
+.c-topbar .brand { color: var(--ink); }
+
+/* A2 kicker 眉题：标题上方的栏目小字 */
+.c-kicker {
+  font-family: var(--mono); font-size: 26px; letter-spacing: 8px;
+  color: var(--ink-soft); text-transform: uppercase; margin-bottom: 34px;
+}
+
+/* A3 页脚：左版权 + 右页码/信息 */
+.c-footer {
+  display: flex; justify-content: space-between; align-items: baseline;
+  font-family: var(--mono); font-size: 24px; letter-spacing: 4px;
+  color: var(--ink-soft); padding-top: 34px;
+}
+
+/* A4 胶囊标签组 */
+.c-capsules { display: flex; gap: 22px; flex-wrap: wrap; margin: 38px 0; }
+.c-capsule {
+  border: 2px solid var(--ink); border-radius: 60px;
+  padding: 10px 32px; font-size: 27px; letter-spacing: 3px; color: var(--ink);
+}
+
+/* A5 超大页码水印（绝对定位右上） */
+.c-pagenum-mark {
+  position: absolute; top: 30px; right: 64px;
+  font-family: var(--serif); font-size: 480px; line-height: 1;
+  color: var(--ink); opacity: 0.10; pointer-events: none;
+}
+
+/* ---------- B. 标题层 ---------- */
+
+/* B1 衬线大标题（中英混排）——参考图：零字距、字重 900、紧行距 */
+.c-title-serif {
+  font-family: var(--serif); font-weight: 900;
+  font-size: 100px; line-height: 1.26; letter-spacing: 1px;
+}
+/* B2 黑体大标题 */
+.c-title-black {
+  font-family: var(--sans); font-weight: 900;
+  font-size: 96px; line-height: 1.22; letter-spacing: 0;
+}
+/* B3 强调色副题 */
+.c-subtitle-accent {
+  color: var(--accent); font-weight: 700;
+  font-size: 42px; letter-spacing: 1px; margin-top: 28px;
+}
+/* B4 红线强调：短横线 / 竖线 两种 */
+.c-rule  { width: 160px; height: 7px; background: var(--accent); margin: 44px 0; }
+.c-rule-v {
+  border-left: 7px solid var(--accent);
+  padding-left: 32px; margin: 40px 0;
+}
+
+/* ---------- C. 文本层 ---------- */
+
+/* C1 正文段 */
+.c-body {
+  font-size: 42px; line-height: 1.82; letter-spacing: 0.5px; color: var(--ink);
+}
+.c-body + .c-body { margin-top: 36px; }
+.c-body b, .c-body strong { color: var(--accent); font-weight: 700; }
+
+/* C2 衬线导语句 */
+.c-lead {
+  font-family: var(--serif); font-size: 56px; font-weight: 900;
+  line-height: 1.5; letter-spacing: 1px;
+}
+
+/* C3 引言金句（大衬线；--accent 变体用强调色） */
+.c-quote {
+  font-family: var(--serif); font-weight: 900;
+  font-size: 84px; line-height: 1.38; letter-spacing: 1px;
+}
+.c-quote--accent { color: var(--accent); }
+
+/* C4 引文出处 */
+.c-quote-source { font-size: 27px; color: var(--ink-soft); margin-top: 18px; letter-spacing: 1px; }
+
+/* ---------- D. 结构层 ---------- */
+
+/* D1 双栏清单：术语 + 释义，下划线分隔 */
+.c-list2col { display: grid; grid-template-columns: 1fr 1fr; column-gap: 84px; margin-top: 20px; }
+.c-list2col-item {
+  display: flex; justify-content: space-between; align-items: baseline;
+  border-bottom: 3px solid var(--ink); padding: 24px 0 18px;
+}
+.c-list2col-item .term { font-family: var(--serif); font-size: 46px; font-weight: 900; }
+.c-list2col-item .note { font-size: 27px; color: var(--ink-soft); }
+
+/* D2 规格表格：彩头 + 斑马纹 */
+.c-table { width: 100%; border-collapse: collapse; margin: 36px 0; font-size: 33px; }
+.c-table thead th {
+  background: var(--accent); color: #fff; text-align: left;
+  padding: 20px 28px; font-weight: 700; letter-spacing: 2px;
+}
+.c-table tbody td { padding: 22px 28px; }
+.c-table tbody tr:nth-child(odd) { background: var(--card); }
+.c-table tbody tr:nth-child(even) { background: rgba(127,127,127,0.10); }
+.c-table td.em { color: var(--accent); font-weight: 700; }
+
+/* D3 时间线：年份 + 事件 */
+.c-timeline-item { border-top: 3px solid var(--ink); padding: 22px 0; }
+.c-timeline-item .year { font-weight: 900; font-size: 40px; }
+.c-timeline-item .event { font-size: 29px; color: var(--ink-soft); margin-top: 6px; }
+
+/* D4 映射行：白卡 → 色块卡 + 箭头 */
+.c-map-row { display: flex; align-items: stretch; gap: 22px; margin-bottom: 32px; }
+.c-map-card {
+  flex: 0 0 34%; border: 2px solid var(--ink-soft); background: var(--card);
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 28px; text-align: center; gap: 12px;
+}
+.c-map-card .logo { font-weight: 900; font-size: 42px; }
+.c-map-card .org  { font-family: var(--mono); font-size: 22px; color: var(--ink-soft); letter-spacing: 2px; }
+.c-map-arrow { align-self: center; font-size: 48px; color: var(--ink); }
+.c-map-block {
+  flex: 1; padding: 32px 38px; display: flex; flex-direction: column; justify-content: center; gap: 10px;
+}
+.c-map-block .name { font-family: var(--serif); font-size: 50px; font-weight: 900; }
+.c-map-block .meta { font-family: var(--mono); font-size: 24px; letter-spacing: 2px; opacity: 0.85; }
+.c-map-block--olive  { background: #7C8A4D; color: #F5F2E4; }
+.c-map-block--wine   { background: #6E2233; color: #F2E8DC; }
+.c-map-block--purple { background: #6B5876; color: #F0E9E4; }
+.c-map-block--navy   { background: #1F3B66; color: #F2EDE0; }
+
+/* D5 三联信息卡 */
+.c-infocards { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 26px; margin: 40px 0; }
+.c-infocard { border: 2px solid var(--line); padding: 28px 30px; min-height: 230px; }
+.c-infocard .label { font-family: var(--mono); font-size: 23px; letter-spacing: 3px; color: var(--ink-soft); }
+.c-infocard .val   { font-size: 38px; font-weight: 700; margin-top: 20px; line-height: 1.5; }
+
+/* D6 边框小卡 */
+.c-framecard { border: 2px solid var(--line); padding: 30px 34px; }
+.c-framecard .label { font-family: var(--mono); font-size: 23px; letter-spacing: 3px; color: var(--ink-soft); }
+.c-framecard .val   { font-family: var(--serif); font-size: 42px; font-weight: 900; margin-top: 16px; line-height: 1.45; }
+
+/* ---------- E. 图片层 ---------- */
+
+/* E1 白圆角大图 + 图注 */
+.c-img-hero { background: #fff; border-radius: 22px; padding: 14px; overflow: hidden; flex-shrink: 0; }
+.c-img-hero img, .c-img-hero > .ph {
+  width: 100%; height: 100%; display: block; border-radius: 12px; object-fit: cover;
+}
+.c-caption { font-size: 27px; color: var(--ink-soft); margin-top: 16px; letter-spacing: 0.5px; }
+
+/* E2 1大2小 图片组 + 黑色标签条 */
+.c-imgrow { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; flex: 1; min-height: 0; }
+.c-imgcol { display: flex; flex-direction: column; gap: 20px; min-height: 0; }
+.c-imgrow > .c-imgcell { min-height: 0; }
+.c-imgcol > .c-imgcell { flex: 1; min-height: 0; }
+.c-imgcell { position: relative; overflow: hidden; }
+.c-imgcell img { width: 100%; height: 100%; min-height: 0; object-fit: cover; display: block; }
+.c-imgtag {
+  position: absolute; left: 0; bottom: 0;
+  background: #141414; color: #EFE9DC;
+  font-family: var(--mono); font-size: 22px; letter-spacing: 2px;
+  padding: 9px 20px;
+}
+
+/* E3 网格：四 / 六 / 九宫格 */
+.c-grid4 { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; }
+.c-grid6 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 11px; }
+.c-grid9 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 9px; }
+.c-grid4 img, .c-grid6 img, .c-grid9 img {
+  width: 100%; height: 100%; min-height: 0; object-fit: cover; display: block;
+}
+.c-grid4, .c-grid6, .c-grid9 { min-height: 0; overflow: hidden; }
+
+/* E4 色块结论卡（深底白字粗体结论） */
+.c-colorcard {
+  background: var(--accent); color: #fff;
+  padding: 34px 40px; border-radius: 6px;
+  font-size: 42px; font-weight: 700; line-height: 1.65; letter-spacing: 0.5px;
+  flex-shrink: 0;
+}
+
+/* E5 全幅照片 + 叠字封面（需 body 无 padding 变体） */
+.c-fullbleed {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+}
+.c-fullbleed img { width: 100%; height: 100%; object-fit: cover; }
+.c-fullbleed .shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0) 40%, rgba(0,0,0,0.55) 78%); }
+.c-overlay-text {
+  position: absolute; left: 84px; right: 84px; bottom: 96px;
+  color: #fff; font-size: 92px; font-weight: 900; line-height: 1.3; letter-spacing: 1px;
+}
+.c-overlay-kicker {
+  position: absolute; right: 84px; top: 72px;
+  color: #fff; font-family: var(--serif); font-size: 64px; font-weight: 900; line-height: 1.2;
+  writing-mode: vertical-rl; letter-spacing: 8px;
+}
+
+/* E5b 全幅叠字：底部磨砂标题区
+   模糊(backdrop-filter) + 图片区域平均色半透明底(--frost-tint，由 render.py 按
+   data-frost 图片自动计算注入)；mask 让磨砂与底色向上渐隐，避免硬边 */
+.c-frost { position: absolute; left: 0; right: 0; bottom: 0; }
+.c-frost::before {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(to top, var(--frost-tint, rgba(10, 14, 18, 0.78)) 32%, transparent);
+  backdrop-filter: blur(22px) saturate(1.2) brightness(0.94);
+  -webkit-backdrop-filter: blur(22px) saturate(1.2) brightness(0.94);
+  mask-image: linear-gradient(to top, #000 58%, transparent);
+  -webkit-mask-image: linear-gradient(to top, #000 58%, transparent);
+}
+.c-frost-body { position: relative; padding: 220px 84px 52px; }
+.c-frost .c-overlay-text { position: static; }
+.c-frost-foot {
+  margin-top: 40px; color: #fff; opacity: 0.85;
+  font-family: var(--mono); font-size: 24px; letter-spacing: 4px;
+}
+
+/* E6 抽象图形元素：同心圆 + 圆点 */
+.c-graph-circle { position: relative; }
+.c-graph-circle .ring { border: 24px solid var(--ink); border-radius: 50%; }
+.c-graph-circle .dot  { background: var(--accent); border-radius: 50%; position: absolute; }
+
+/* E7 落款信息行（片尾 credits） */
+.c-credits {
+  font-family: var(--mono); font-size: 22px; letter-spacing: 2px;
+  color: var(--ink-soft); border-top: 2px solid var(--line);
+  padding-top: 22px; line-height: 1.9;
+}
+</style><style>.page-body{min-height:0;flex-shrink:0} .c-topbar,.c-footer{flex-shrink:0} .c-fullbleed img{display:block} td,th{overflow-wrap:anywhere}</style><title>56%成功率
+机器人够用吗？</title></head><body class="theme-navy-dark"><div class="c-topbar"><span class="brand"></span><span></span></div><main class="page-body"><div class="c-title-serif" style="font-size:108px;line-height:1.26;margin:44px 0">56%成功率<br>机器人够用吗？</div><div class="c-rule"></div><div class="c-body" style="font-size:40px">Helix 2.5：30个未见住宅测试</div><div class="c-capsules"><div class="c-capsule">整理客厅</div><div class="c-capsule">叠毛巾</div><div class="c-capsule">铺床</div><div class="c-capsule">Figure盲评</div></div><div class="c-body" style="font-size:30px;margin-top:auto;color:var(--ink-soft)">56%是试次成功率，不是可靠性保证</div></main><div class="c-footer" style="align-items:center"><span style="display:flex;align-items:center;gap:16px"><span class="c-logo c-logo--sm c-logo--soft" aria-label="Account logo"></span>未使用原文摄影图片</span><span></span></div></body></html>
